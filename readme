@@ -9,6 +9,7 @@ https://github.com/robotics-upo/gazebo_sfm_plugin
 -- Git commands for initializing a repo--
 go to the folder where you want to create the repo
 
+git init
 git status
 git add .
 git commit -m "message"
