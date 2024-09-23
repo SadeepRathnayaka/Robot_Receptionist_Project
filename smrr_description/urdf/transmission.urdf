@@ -1,0 +1,47 @@
+<robot name="smrr" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <transmission name="right_shoulder_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="shoulder_r_joint">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="shoulder_r_motor">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+          <mechanicalReduction>1.0</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="right_bicep_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="bicep_r_joint">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="bicep_r_motor">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+          <mechanicalReduction>1.0</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="right_elbow_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="elbow_r_joint">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="elbow_r_motor">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+          <mechanicalReduction>1.0</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="right_wrist_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="wrist_r_joint">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="wrist_r_motor">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+          <mechanicalReduction>1.0</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+</robot>
