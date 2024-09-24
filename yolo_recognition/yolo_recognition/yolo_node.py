@@ -8,7 +8,7 @@ import numpy as np
 from custom_msgs.msg import PersonInfo, PersonArray
 from visualization_msgs.msg import Marker, MarkerArray
 import math
-
+import torch
 
 bridge = CvBridge()
 
@@ -24,6 +24,19 @@ class CameraSubscriber(Node):
     def camera_callback(self, msg):
         img = bridge.imgmsg_to_cv2(msg, "bgr8")
         results = self.model(img)
+
+        # Convert bounding boxes, class indices, and class float mappings to numpy arrays
+        xyxy_boxes = results[0].boxes.xyxy.cpu().numpy()  # Bounding box coordinates (x1, y1, x2, y2)
+        class_indices = results[0].boxes.cls.cpu().numpy()  # Class indices
+
+        # Define the float values for each class
+        class_floats = {0: 1.2, 1: 1.4, 2: 1.6, 3: 1.8}
+
+        # Create a numpy array of float values corresponding to class indices
+        float_values = np.vectorize(class_floats.get)(class_indices)
+
+        # Stack bounding boxes, class indices, and float values together
+        new_data = np.column_stack((xyxy_boxes, class_indices, float_values))
 
         for r in (results):
             boxes = r.boxes

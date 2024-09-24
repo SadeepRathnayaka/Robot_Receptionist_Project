@@ -8,6 +8,7 @@ import numpy as np
 from custom_msgs.msg import PersonInfo, PersonArray
 from visualization_msgs.msg import Marker, MarkerArray
 import math
+import torch
 
 
 bridge = CvBridge()
@@ -22,7 +23,7 @@ class CameraSubscriber(Node):
     def __init__(self):
         super().__init__('camera_subscriber')
 
-        self.model = YOLO('/home/sadeep/fyp_ws/src/yolo_recognition/yolo_recognition/yolov10n.pt')
+        self.model = YOLO('/home/sadeep/fyp_ws/src/yolo_recognition/yolo_recognition/best.pt')
 
         self.sub_ = self.create_subscription(Image, '/zed2_left_camera/image_raw', self.camera_callback, 10)
         self.img_pub_ = self.create_publisher(Image, '/inference_result', 1)
@@ -42,6 +43,19 @@ class CameraSubscriber(Node):
     def camera_callback(self, msg):
         img = bridge.imgmsg_to_cv2(msg, "bgr8")
         results = self.model(img)
+
+        # # Convert bounding boxes, class indices, and class float mappings to numpy arrays
+        # xyxy_boxes = results[0].boxes.xyxy.cpu().numpy()  # Bounding box coordinates (x1, y1, x2, y2)
+        # class_indices = results[0].boxes.cls.cpu().numpy()  # Class indices
+
+        # # Define the float values for each class
+        # class_floats = {0: 1.2, 1: 1.4, 2: 1.6, 3: 1.8}
+
+        # # Create a numpy array of float values corresponding to class indices
+        # float_values = np.vectorize(class_floats.get)(class_indices)
+
+        # # Stack bounding boxes, class indices, and float values together
+        # new_data = np.column_stack((xyxy_boxes, class_indices, float_values))
 
         # Mid-point of the image
         mid_point_x = int(img.shape[1] / 2)
@@ -66,7 +80,8 @@ class CameraSubscriber(Node):
                 b = box.xyxy[0].to('cpu').detach().numpy().copy()
                 c = box.cls
                 conf = box.conf.item()
-                if (self.model.names[int(c)] == "person"):
+                if (self.model.names[int(c)] == "normal-adult"):
+                # if (self.model.names[int(c)] == "person"):
 
                     x_min = int(b[0])  # Top-left x-coordinate
                     y_min = int(b[1])  # Top-left y-coordinate

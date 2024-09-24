@@ -57,7 +57,7 @@ class LidarSubscriber(Node):
             cartesian_coords = np.array([[person.x, person.y] for person in visual_data.persons_array])
 
             # Radius threshold for circle (in meters)
-            radius_threshold = 0.5
+            radius_threshold = 0.75
 
             for i, (person_x, person_y) in enumerate(cartesian_coords):
                 distances = np.linalg.norm(lidar_points - np.array([person_x, person_y]), axis=1)
@@ -116,7 +116,7 @@ class LidarSubscriber(Node):
                 self.marker_pub_.publish(delete_markers)
 
         else:
-            threshold = 0.75
+            threshold = 0.4
             marker_array = MarkerArray() 
             laser_data_array = PersonArray()  
             laser_data_array.header.frame_id = "rplidar_link"

@@ -480,15 +480,6 @@
             </plugin>
           </actor>   -->
 
-
-
-
-
-
-
-
-
-
           <actor name="actor1">
             <pose>-1 2 1.25 0 0 0</pose>
             <skin>

@@ -17,6 +17,7 @@
   <depend>cv_bridge</depend>
   <depend>custom_msgs</depend>
   <depend>ultralytics</depend>
+  <depend>torch</depend>
   
   <export>
     <build_type>ament_python</build_type>
