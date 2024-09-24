@@ -22,7 +22,6 @@ setup(
         'console_scripts': [
             'inference_node = yolo_recognition.inference_node:main',
             'lidar_subscriber = yolo_recognition.lidar_subscriber:main',
-            'lidar_subscriber_2 = yolo_recognition.lidar_subscriber_2:main',
             'yolo_node = yolo_recognition.yolo_node:main',
         ],
     },
