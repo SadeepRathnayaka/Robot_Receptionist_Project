@@ -143,13 +143,13 @@
             </include>
             <pose frame=''>-8.270775 -4.504456 0 0 -0 0.869673</pose>
         </model> -->
-        <model name='Chandelier_01_001'>
+        <!-- <model name='Chandelier_01_001'>
             <static>true</static>
             <include>
                 <uri>model://aws_robomaker_residential_Chandelier_01</uri>
             </include>
             <pose frame=''>1.221061 4.155740 1.295000 0 -0 0</pose>
-        </model>
+        </model> -->
         <!-- <model name='Chandelier_01_002'>
             <static>true</static>
             <include>
@@ -157,20 +157,20 @@
             </include>
             <pose frame=''>-6.451061 -0.692040 1.810000 0 -0 0</pose>
         </model> -->
-        <model name='Chandelier_01_003'>
+        <!-- <model name='Chandelier_01_003'>
             <static>true</static>
             <include>
                 <uri>model://aws_robomaker_residential_Chandelier_01</uri>
             </include>
             <pose frame=''>7.824061 -1.59 1.7510000 0 -0 0</pose>
-        </model>
-        <model name='Chandelier_01_004'>
+        </model> -->
+        <!-- <model name='Chandelier_01_004'>
             <static>true</static>
             <include>
                 <uri>model://aws_robomaker_residential_Chandelier_01</uri>
             </include>
             <pose frame=''>1.221061 -1.592040 1.7873000 0 -0 0</pose>
-        </model>
+        </model> -->
         <model name='Carpet_01_001'>
             <static>true</static>
             <include>
@@ -781,7 +781,7 @@
         </light>
 
 
-        <!-- <actor name="actor1">
+        <actor name="actor1">
             <pose>-1 2 1.25 0 0 0</pose>
                 <skin>
                   <filename>/home/sadeep/fyp_ws/src/gazebo_sfm_plugin-galactic/media/models/child_run.dae</filename>
@@ -817,7 +817,7 @@
                 <waypoint>-1 2 1.25</waypoint>
               </trajectory>
             </plugin>
-          </actor>  -->
+          </actor> 
 
         
           <actor name="actor2">

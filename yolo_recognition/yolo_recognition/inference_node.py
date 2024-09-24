@@ -149,9 +149,7 @@ class CameraSubscriber(Node):
 
         img_msg = bridge.cv2_to_imgmsg(img)
         self.img_pub_.publish(img_msg)
-        length_marker = len(marker_array.markers)
-        length_array = len(dynamic_obs_array.persons_array)
-
+        
        
 def main(args=None):
     rclpy.init(args=args)
