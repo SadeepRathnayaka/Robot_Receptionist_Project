@@ -7,11 +7,9 @@ from rclpy.executors import MultiThreadedExecutor, SingleThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 from visualization_msgs.msg import Marker, MarkerArray
 
-# Global variables
-lidar_data = None
+# Global variable
 visual_data = PersonArray()
-# visual_data_len = 0
-# visual_data_len_ = 0
+
 
 class LidarSubscriber(Node):
     def __init__(self):
@@ -62,17 +60,12 @@ class LidarSubscriber(Node):
             radius_threshold = 0.5
 
             for i, (person_x, person_y) in enumerate(cartesian_coords):
-                # Calculate distance from each LiDAR point to the visual estimation (person position)
                 distances = np.linalg.norm(lidar_points - np.array([person_x, person_y]), axis=1)
-
-                # Find LiDAR points within the circle defined by radius threshold
                 points_within_circle = np.where(distances <= radius_threshold)[0]
 
                 if len(points_within_circle) == 0:
-                    # self.get_logger().info(f"No LiDAR data close to the visual position for person {i}")
                     continue
 
-                # Take the mean of these LiDAR points to get an "average" LiDAR position
                 mean_lidar_x = np.mean(lidar_points[points_within_circle, 0])
                 mean_lidar_y = np.mean(lidar_points[points_within_circle, 1])
 
@@ -81,7 +74,7 @@ class LidarSubscriber(Node):
                 marker.header.frame_id = "rplidar_link"
                 marker.header.stamp = self.get_clock().now().to_msg()
                 marker.ns = "persons"
-                marker.id = i  # Unique marker ID
+                marker.id = i  
                 marker.type = Marker.CYLINDER
                 marker.action = Marker.ADD
 
@@ -100,8 +93,8 @@ class LidarSubscriber(Node):
 
                 marker_array.markers.append(marker)
 
-                detected_ids.add(i)  # Add this marker to detected IDs
-                self.active_markers[i] = marker  # Update active markers
+                detected_ids.add(i)  
+                self.active_markers[i] = marker 
 
                 # Create custom message
                 laser_data = PersonInfo()
@@ -122,28 +115,23 @@ class LidarSubscriber(Node):
             if len(delete_markers.markers) > 0:
                 self.marker_pub_.publish(delete_markers)
 
-            # self.marker_pub_.publish(marker_array)
-            # self.laser_pub_.publish(laser_data_array)
-
         else:
             threshold = 0.75
-            marker_array = MarkerArray()  # Initialize the MarkerArray
-            laser_data_array = PersonArray()  # Create LaserVisualDataArray for this frame
+            marker_array = MarkerArray() 
+            laser_data_array = PersonArray()  
             laser_data_array.header.frame_id = "rplidar_link"
             laser_data_array.header.stamp = self.get_clock().now().to_msg()
 
-            for marker_id, marker in self.active_markers.items():  # Iterate over active markers from previous frame
+            for marker_id, marker in self.active_markers.items(): 
                 person_x = marker.pose.position.x
                 person_y = marker.pose.position.y
 
-                # Calculate distance from lidar points to marker position
                 distances = np.linalg.norm(lidar_points - np.array([person_x, person_y]), axis=1)
                 points_within_circle = np.where(distances <= threshold)[0]
 
                 if len(points_within_circle) == 0:
-                    continue  # Skip if no points are within the threshold
+                    continue  
 
-                # Update marker with the mean lidar position
                 mean_lidar_x = np.mean(lidar_points[points_within_circle, 0])
                 mean_lidar_y = np.mean(lidar_points[points_within_circle, 1])
 
@@ -157,17 +145,11 @@ class LidarSubscriber(Node):
                 laser_data.y = mean_lidar_y
 
                 laser_data_array.persons_array.append(laser_data)
-                marker_array.markers.append(marker)  # Add the updated marker to the array
+                marker_array.markers.append(marker)  
 
-            # # Publish updated markers and laser data
-            # self.marker_pub_.publish(marker_array)
-            # self.laser_pub_.publish(laser_data_array)
-
-        # Publish updated markers and laser data
         self.marker_pub_.publish(marker_array)
         self.laser_pub_.publish(laser_data_array)
-
-        
+           
 
 class VisualDataSubscriber(Node):
     def __init__(self):
