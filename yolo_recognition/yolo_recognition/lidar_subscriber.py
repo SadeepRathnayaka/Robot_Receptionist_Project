@@ -6,6 +6,7 @@ from custom_msgs.msg import PersonInfo, PersonArray
 from rclpy.executors import MultiThreadedExecutor, SingleThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 from visualization_msgs.msg import Marker, MarkerArray
+from .include.transform import GeometricTransformations
 
 # Global variable
 visual_data = PersonArray()
@@ -23,6 +24,7 @@ class LidarSubscriber(Node):
         self.active_markers = {}
         self.visual_data_len = 0
         
+        self.transform = GeometricTransformations(self)
 
     def lidar_callback(self, lidar_data):
 
@@ -46,10 +48,13 @@ class LidarSubscriber(Node):
         laser_data_array.header.frame_id = "rplidar_link"
         laser_data_array.header.stamp = self.get_clock().now().to_msg()
 
+        transformed_points_array = np.empty((0, 4))
+
         global visual_data
         visual_data_len_ = len(visual_data.persons_array)
 
         if (visual_data_len_ == 0):
+            self.get_logger().warn("No visual data received")
             return
 
         if (visual_data_len_ != self.visual_data_len):
@@ -104,6 +109,12 @@ class LidarSubscriber(Node):
 
                 laser_data_array.persons_array.append(laser_data)
 
+                point_x = mean_lidar_x
+                point_y = mean_lidar_y
+                point_z = 0.0
+
+                transformed_points_array = np.vstack([transformed_points_array, [point_x, point_y, point_z, 1]])
+
             # Remove unused markers by setting their action to DELETE
             for marker_id in list(self.active_markers.keys()):
                 if marker_id not in detected_ids:
@@ -144,8 +155,20 @@ class LidarSubscriber(Node):
                 laser_data.x = mean_lidar_x
                 laser_data.y = mean_lidar_y
 
+                point_x = mean_lidar_x
+                point_y = mean_lidar_y
+                point_z = 0.0
+
+                transformed_points_array = np.vstack([transformed_points_array, [point_x, point_y, point_z, 1]])
+
                 laser_data_array.persons_array.append(laser_data)
                 marker_array.markers.append(marker)  
+
+        # transform the points to the map frame
+        # transformation = self.transform.get_transform("map", "rplidar_link")
+
+        # if transformation is not None:
+        #     transformed_points = self.transform.transform_points(transformed_points_array.T, transformation)
 
         self.marker_pub_.publish(marker_array)
         self.laser_pub_.publish(laser_data_array)

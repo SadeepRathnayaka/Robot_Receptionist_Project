@@ -23,7 +23,7 @@ def generate_launch_description():
     smrr_description_prefix = get_package_prefix("smrr_description")
 
     model_path = os.path.join(smrr_description_prefix, "share")
-    model_path += pathsep + "/home/sadeep/fyp_ws/src/gazebo_sfm_plugin-galactic/media/models"
+    model_path += pathsep + "/home/sadeep/fyp_ws/src/gazebo_sfm_plugin-galactic/media/models"           # change the path as needed
     env_var = SetEnvironmentVariable("GAZEBO_MODEL_PATH", model_path)
 
     model_arg = DeclareLaunchArgument(name="model", default_value=os.path.join(

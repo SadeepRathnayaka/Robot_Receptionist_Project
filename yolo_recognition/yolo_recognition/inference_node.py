@@ -45,10 +45,9 @@ class CameraSubscriber(Node):
         results = self.model(img)
 
         # # Convert bounding boxes, class indices, and class float mappings to numpy arrays
-        # xyxy_boxes = results[0].boxes.xyxy.cpu().numpy()  # Bounding box coordinates (x1, y1, x2, y2)
-        # class_indices = results[0].boxes.cls.cpu().numpy()  # Class indices
+        # xyxy_boxes = results[0].boxes.xyxy.cpu().numpy()  
+        # class_indices = results[0].boxes.cls.cpu().numpy()  
 
-        # # Define the float values for each class
         # class_floats = {0: 1.2, 1: 1.4, 2: 1.6, 3: 1.8}
 
         # # Create a numpy array of float values corresponding to class indices

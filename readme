@@ -6,6 +6,14 @@ Go through the following steps to run the simulation
 install gazebo sfm plugin dependencies : for more info visit
 https://github.com/robotics-upo/gazebo_sfm_plugin 
 
+-- Note --
+change the model path in 
+
+   - gazebo_gpu.launch.py
+   - all the world files 
+   
+                        as needed
+
 -- Git commands for initializing a repo--
 go to the folder where you want to create the repo
 
