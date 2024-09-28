@@ -15,6 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     "msg/Yolov10Inference.msg"
     "msg/PersonInfo.msg"
     "msg/PersonArray.msg"
+    "msg/Entities.msg"
     DEPENDENCIES std_msgs
  )
 ament_export_dependencies(rosidl_default_runtime)
@@ -24,6 +25,7 @@ set(msg_files
   "msg/Yolov10Inference.msg"
   "msg/PersonInfo.msg"
   "msg/PersonArray.msg"
+  "msg/Entities.msg"
 )
 
 if(BUILD_TESTING)
