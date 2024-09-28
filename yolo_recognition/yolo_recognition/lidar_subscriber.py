@@ -2,10 +2,11 @@ import rclpy
 import numpy as np
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-from custom_msgs.msg import PersonInfo, PersonArray
+from custom_msgs.msg import PersonArray, Entities
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 from visualization_msgs.msg import Marker, MarkerArray
+from .include.transform import GeometricTransformations
 
 # Global variables
 visual_data = PersonArray()
@@ -16,10 +17,9 @@ class LidarSubscriber(Node):
         super().__init__("lidar_subscriber")
         self.cb_group = ReentrantCallbackGroup()
         self.laser_sub_ = self.create_subscription(LaserScan, "/rplidar_controller/out", self.lidar_callback, 10, callback_group=self.cb_group)
-        self.marker_pub_ = self.create_publisher(MarkerArray, "/lidar_markers", 10)
-        self.laser_pub_ = self.create_publisher(PersonArray, "/laser_data_array", 10)
+        self.laser_pub_ = self.create_publisher(Entities, "/laser_data_array", 10)
+        self.transform = GeometricTransformations(self)
 
-        self.previous_marker_ids = set()
 
     def lidar_callback(self, lidar_data_msg):
         global lidar_data, visual_data
@@ -34,12 +34,8 @@ class LidarSubscriber(Node):
 
         lidar_points = np.vstack((lidar_x, lidar_y)).T
 
-        marker_array = MarkerArray()
-        current_marker_ids = set()
-
-        # Threshold for tracking a person
-        threshold = 0.75
-        updated_lidar_data = []
+        # variables for tracking the person 
+        threshold, ids, classes, updated_lidar_data = 0.75, [], [], []
 
         for i, (person_x, person_y) in enumerate(lidar_data):
             distances = np.linalg.norm(lidar_points - np.array([person_x, person_y]), axis=1)
@@ -49,50 +45,12 @@ class LidarSubscriber(Node):
                 self.get_logger().warn(f"Person {i} not found in LiDAR data")
                 continue
 
-            # Calculate the mean point for this person
             mean_lidar_x = np.mean(lidar_points[points_within_circle, 0])
             mean_lidar_y = np.mean(lidar_points[points_within_circle, 1])
 
             updated_lidar_data.append([mean_lidar_x, mean_lidar_y])
-            current_marker_ids.add(i)
-
-            # Create the marker for RViz visualization
-            marker = Marker()
-            marker.header.frame_id = "rplidar_link"
-            marker.header.stamp = self.get_clock().now().to_msg()
-            marker.ns = "persons"
-            marker.id = i
-            marker.type = Marker.CYLINDER
-            marker.action = Marker.ADD
-
-            marker.pose.position.x = mean_lidar_x
-            marker.pose.position.y = mean_lidar_y
-            marker.pose.position.z = 0.0
-
-            marker.scale.x = 0.25
-            marker.scale.y = 0.25
-            marker.scale.z = 0.001
-
-            marker.color.a = 1.0
-            marker.color.r = 1.0
-            marker.color.g = 0.0
-            marker.color.b = 0.0
-
-            marker_array.markers.append(marker)
-
-        # Remove old markers that are no longer being tracked
-        for old_marker_id in self.previous_marker_ids.difference(current_marker_ids):
-            marker = Marker()
-            marker.header.frame_id = "rplidar_link"
-            marker.header.stamp = self.get_clock().now().to_msg()
-            marker.ns = "persons"
-            marker.id = old_marker_id
-            marker.action = Marker.DELETE  # Remove old marker
-            marker_array.markers.append(marker)
-
-        # # Update the set of currently active markers
-        self.previous_marker_ids = current_marker_ids
-        self.marker_pub_.publish(marker_array)
+            ids.append(i)
+            
         lidar_data = updated_lidar_data
 
         visual_points = np.array([[person.x, person.y] for person in visual_data.persons_array])
@@ -114,9 +72,23 @@ class LidarSubscriber(Node):
                     new_lidar_data[index] = visual_point.tolist()
 
             lidar_data = new_lidar_data
+            lidar_data = list(set(map(tuple, lidar_data)))
 
-        if (len(lidar_data) != 4):
-            print("lidar_data", lidar_data)
+            # # transform the lidar data to the map frame
+            # transformation = self.transform.get_transformation("map", "rplidar_link")
+            # obs_arr = np.hstack((np.array(lidar_data[:,0])), np.array(lidar_data[:,1]), np.zero_like(lidar_data[:,0]), np.ones_like(lidar_data[:,0])).reshape(4,-1)
+
+            # if transformation is not None:
+            #     transformed_points = self.transform.transform_points(obs_arr, transformation)
+            #     lidar_data = transformed_points.T
+
+            entities = Entities()
+            entities.count = len(lidar_data)
+            entities.id = ids
+            entities.x = np.array(lidar_data)[:, 0].tolist()
+            entities.y = np.array(lidar_data)[:, 1].tolist()
+
+            self.laser_pub_.publish(entities)
 
         
 
