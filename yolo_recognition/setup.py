@@ -23,6 +23,7 @@ setup(
             'inference_node = yolo_recognition.inference_node:main',
             'lidar_subscriber = yolo_recognition.lidar_subscriber:main',
             'yolo_node = yolo_recognition.yolo_node:main',
+            'visualizer = yolo_recognition.visualizer:main',
         ],
     },
 )
