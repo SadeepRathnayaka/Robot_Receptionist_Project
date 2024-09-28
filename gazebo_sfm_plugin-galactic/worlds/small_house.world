@@ -940,7 +940,7 @@
             </plugin>
           </actor>  
       
-          <!-- <actor name="actor6">
+          <actor name="actor6">
             <pose>3 0.8 1.25 0 0 0</pose>
             <skin>
               <filename>/home/sadeep/fyp_ws/src/gazebo_sfm_plugin-galactic/media/models/worker_man.dae</filename> 
@@ -976,7 +976,7 @@
                 <waypoint>3 0.8 1.25</waypoint>
               </trajectory>
             </plugin>
-          </actor>   -->
+          </actor>  
 
           <actor name="actor7">
             <pose>5 3 0 0 0 0</pose>
