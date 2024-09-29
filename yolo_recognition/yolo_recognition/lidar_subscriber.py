@@ -9,7 +9,7 @@ from visualization_msgs.msg import Marker, MarkerArray
 from .include.transform import GeometricTransformations
 
 # Global variables
-visual_data = PersonArray()
+visual_data = Entities()
 lidar_data = []
 
 class LidarSubscriber(Node):
@@ -34,11 +34,14 @@ class LidarSubscriber(Node):
 
         lidar_points = np.vstack((lidar_x, lidar_y)).T
 
-        # variables for tracking the person 
-        threshold, ids, classes, updated_lidar_data = 0.75, [], [], []
+        # variables for tracking the person
+        lidar_th = 0.75
+        threshold,  classes = lidar_th , []
+        updated_lidar_data = []
 
-        for i, (person_x, person_y) in enumerate(lidar_data):
-            distances = np.linalg.norm(lidar_points - np.array([person_x, person_y]), axis=1)
+        for i, data in enumerate(lidar_data):
+            person_x, person_y, class_ = data[:]
+            distances = np.linalg.norm(lidar_points - np.array([person_x, person_y], dtype=float), axis=1)
             points_within_circle = np.where(distances <= threshold)[0]
 
             if len(points_within_circle) == 0:
@@ -48,12 +51,14 @@ class LidarSubscriber(Node):
             mean_lidar_x = np.mean(lidar_points[points_within_circle, 0])
             mean_lidar_y = np.mean(lidar_points[points_within_circle, 1])
 
-            updated_lidar_data.append([mean_lidar_x, mean_lidar_y])
-            ids.append(i)
-            
+            updated_lidar_data.append([mean_lidar_x, mean_lidar_y, class_])
+        
         lidar_data = updated_lidar_data
 
-        visual_points = np.array([[person.x, person.y] for person in visual_data.persons_array])
+        visual_points_classes = np.array(visual_data.classes)
+        visual_points_x = np.array(visual_data.x, dtype=float)
+        visual_points_y = np.array(visual_data.y, dtype=float)
+        visual_points = np.vstack((visual_points_x, visual_points_y, visual_points_classes)).T
 
         if len(lidar_data) == 0:
             lidar_data = visual_points.tolist()
@@ -61,18 +66,25 @@ class LidarSubscriber(Node):
             threshold = 2.0
             new_lidar_data = lidar_data.copy()
 
-            for visual_point in visual_points:
-                distances = np.linalg.norm(np.array(lidar_data) - visual_point, axis=1)
+            for i, visual_point in enumerate(visual_points):
+                lidar_data_np = np.array(lidar_data)[:, :2]
+                lidar_data_np = np.array(lidar_data_np, dtype=float)
+                distances = np.linalg.norm(lidar_data_np - np.array(visual_point[:2], dtype=float), axis=1)
                 min_distance = np.min(distances)
 
                 if min_distance > threshold:
                     new_lidar_data.append(visual_point.tolist())
-                else:
-                    index = np.argmin(distances)
-                    new_lidar_data[index] = visual_point.tolist()
+                # else:
+                #     index = np.argmin(distances)
+                #     new_lidar_data[index] = visual_point.tolist()
 
-            lidar_data = new_lidar_data
-            lidar_data = list(set(map(tuple, lidar_data)))
+            unique_lidar_data = []
+
+            for i, point in enumerate(new_lidar_data):
+                if point not in unique_lidar_data:
+                    unique_lidar_data.append(point)
+
+            lidar_data = unique_lidar_data
 
             # # transform the lidar data to the map frame
             # transformation = self.transform.get_transformation("map", "rplidar_link")
@@ -82,11 +94,23 @@ class LidarSubscriber(Node):
             #     transformed_points = self.transform.transform_points(obs_arr, transformation)
             #     lidar_data = transformed_points.T
 
+            lidar_data = np.array(lidar_data)
+
             entities = Entities()
             entities.count = len(lidar_data)
-            entities.id = ids
-            entities.x = np.array(lidar_data)[:, 0].tolist()
-            entities.y = np.array(lidar_data)[:, 1].tolist()
+
+            arr_classes = lidar_data[:, 2]
+            arr_classes = np.array(arr_classes, dtype=str)
+            entities.classes = arr_classes.tolist()
+
+            arr_x = lidar_data[:, 0]
+            arr_x = np.array(arr_x, dtype=float)
+            entities.x = arr_x.tolist()
+
+            arr_y = lidar_data[:, 1]
+            arr_y = np.array(arr_y, dtype=float)
+            entities.y = arr_y.tolist()
+
 
             self.laser_pub_.publish(entities)
 
@@ -96,7 +120,7 @@ class VisualDataSubscriber(Node):
     def __init__(self):
         super().__init__("visual_data_subscriber")
         self.cb_group = ReentrantCallbackGroup()
-        self.visual_sub_ = self.create_subscription(PersonArray, "/visual_dynamic_obs_array", self.visual_callback, 10, callback_group=self.cb_group)
+        self.visual_sub_ = self.create_subscription(Entities, "/visual_dynamic_obs_array", self.visual_callback, 10, callback_group=self.cb_group)
 
     def visual_callback(self, visual_msg):
         global visual_data, lidar_data
