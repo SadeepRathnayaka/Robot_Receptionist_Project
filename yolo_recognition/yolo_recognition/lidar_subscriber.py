@@ -36,8 +36,7 @@ class LidarSubscriber(Node):
 
         # variables for tracking the person
         lidar_th = 0.75
-        threshold,  classes = lidar_th , []
-        updated_lidar_data = []
+        threshold,  classes, updated_lidar_data = lidar_th , [], []
 
         for i, data in enumerate(lidar_data):
             person_x, person_y, class_ = data[:]
@@ -74,9 +73,6 @@ class LidarSubscriber(Node):
 
                 if min_distance > threshold:
                     new_lidar_data.append(visual_point.tolist())
-                # else:
-                #     index = np.argmin(distances)
-                #     new_lidar_data[index] = visual_point.tolist()
 
             unique_lidar_data = []
 
@@ -113,8 +109,7 @@ class LidarSubscriber(Node):
 
 
             self.laser_pub_.publish(entities)
-
-        
+  
 
 class VisualDataSubscriber(Node):
     def __init__(self):
