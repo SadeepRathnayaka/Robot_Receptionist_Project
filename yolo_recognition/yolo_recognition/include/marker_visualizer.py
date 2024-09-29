@@ -5,9 +5,10 @@ from custom_msgs.msg import Entities
 from visualization_msgs.msg import Marker, MarkerArray
 
 class MarkerVisualizer:
-    def __init__(self, node, subscriber_topic, publisher_topic, marker_frame):
+    def __init__(self, node, subscriber_topic, publisher_topic, marker_frame, marker_color):
         self.node = node
         self.marker_frame = marker_frame
+        self.marker_color = marker_color
         self.sub_ = self.node.create_subscription(Entities, subscriber_topic, self.entities_callback, 10)
         self.pub_ = self.node.create_publisher(MarkerArray, publisher_topic, 10)
 
@@ -44,10 +45,17 @@ class MarkerVisualizer:
             marker.scale.x = 0.25
             marker.scale.y = 0.25
             marker.scale.z = 0.001
-            marker.color.a = 1.0
-            marker.color.r = 1.0
-            marker.color.g = 0.0
-            marker.color.b = 0.0
+
+            if (self.marker_color == "red"):
+                marker.color.a = 1.0
+                marker.color.r = 1.0
+                marker.color.g = 0.0
+                marker.color.b = 0.0
+            elif (self.marker_color == "green"):
+                marker.color.a = 1.0
+                marker.color.r = 0.0
+                marker.color.g = 1.0
+                marker.color.b = 0.0
 
             marker_array.markers.append(marker)
 
