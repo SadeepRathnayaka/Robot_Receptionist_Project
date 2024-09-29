@@ -1,6 +1,10 @@
 Source this path in the terminal before run the simulations
 source /usr/share/gazebo/setup.sh
 
+set the marker visualizer for visual data 
+ros2 run yolo_recognition visualizer --ros-args -p subscriber_topic:=/visual_dynamic_obs_array -p publisher_topic:=/visual_data_markers -p marker_color:=green
+
+
 Go through the following steps to run the simulation
 
 install gazebo sfm plugin dependencies : for more info visit
