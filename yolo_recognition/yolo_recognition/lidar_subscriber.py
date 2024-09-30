@@ -2,7 +2,7 @@ import rclpy
 import numpy as np
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-from custom_msgs.msg import PersonArray, Entities
+from custom_msgs.msg import Entities
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 from visualization_msgs.msg import Marker, MarkerArray
@@ -16,7 +16,7 @@ class LidarSubscriber(Node):
     def __init__(self):
         super().__init__("lidar_subscriber")
         self.cb_group = ReentrantCallbackGroup()
-        self.laser_sub_ = self.create_subscription(LaserScan, "/rplidar_controller/out", self.lidar_callback, 10, callback_group=self.cb_group)
+        self.laser_sub_ = self.create_subscription(LaserScan, "/scan", self.lidar_callback, 10, callback_group=self.cb_group)
         self.laser_pub_ = self.create_publisher(Entities, "/laser_data_array", 10)
         self.transform = GeometricTransformations(self)
 
@@ -106,7 +106,6 @@ class LidarSubscriber(Node):
             arr_y = lidar_data[:, 1]
             arr_y = np.array(arr_y, dtype=float)
             entities.y = arr_y.tolist()
-
 
             self.laser_pub_.publish(entities)
   
