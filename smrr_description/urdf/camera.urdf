@@ -72,53 +72,6 @@
         
         <material>Gazebo/Red</material>
 
-        <!-- <sensor name="zed2_left_raw_camera" type="camera">
-            <pose> 0 0 0 0 0 0 </pose>
-            <visualize>true</visualize>
-            <always_on>true</always_on>
-            <update_rate>15</update_rate>
-            <camera>
-                <horizontal_fov>1.7633</horizontal_fov>
-                <image>
-                    <format>R8G8B8</format>
-                    <width>1280</width>
-                    <height>720</height>
-                </image>
-                <clip>
-                    <near>0.1</near>
-                    <far>300</far>
-                </clip>
-                <noise>
-                    <type>gaussian</type>
-                    <mean>0.0</mean>
-                    <stddev>0.007</stddev>
-                </noise>
-                <distortion>
-                    <k1>-0.043693598</k1>
-                    <k2>0.0146164996</k2>
-                    <p1>-0.006573319</p1>
-                    <p2>-0.000216900</p2>
-                    <k3>0.000084328</k3>
-                    <center>0.5 0.5</center>
-                </distortion>
-            </camera>
-            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
-                <cameraName>zed2/zed_node/left_raw</cameraName>
-                <imageTopicName>image_raw_color</imageTopicName>
-                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                <frameName>left_camera_link_optical</frameName>
-                <distortionK1>-0.043693598</distortionK1>
-                <distortionK2>0.0146164996</distortionK2>
-                <distortionT1>-0.006573319</distortionT1>
-                <distortionT2>-0.000216900</distortionT2>
-                <distortionK3>0.000084328</distortionK3>
-                <CxPrime>648.5</CxPrime>
-                <Cx>648.5</Cx>
-                <Cy>366.8340148925781</Cy>
-                <hackBaseline>0.0</hackBaseline>
-            </plugin>
-        </sensor> -->
-
         <sensor name="zed2_left_camera" type="depth">
             <!-- Rectified images, Depth images, Point Clouds -->
             <visualize>true</visualize>
